@@ -7,12 +7,9 @@ from aio_pika import connect, Channel, Message
 from datetime import datetime as dt
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import select
-
-import consumer
-from models import create_db, engine, Result
+from models import create_db, engine, Result, RABBITMQ_URL, DATABASE_URL
 from sqlalchemy.ext.asyncio import AsyncSession
 
-RABBITMQ_URL = "amqp://guest:guest@localhost:5672/"
 
 Base = declarative_base()
 session_async = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)

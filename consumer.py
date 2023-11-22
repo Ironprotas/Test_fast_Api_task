@@ -1,12 +1,12 @@
 import asyncio
 import json
 from aio_pika import connect, IncomingMessage
-from models import Result, engine, create_db, Base
+from models import Result, engine, create_db, Base, RABBITMQ_URL
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime as dt
 from pydantic import BaseModel
 
-RABBITMQ_URL = "amqp://guest:guest@localhost:5672/"
+
 
 class Message(BaseModel):
     datetime: str
@@ -57,7 +57,7 @@ async def main():
         loop.close()
 
 if __name__ == "__main__":
-    print("test")
+
     loop = asyncio.get_event_loop()
     loop.create_task(main())
     try:

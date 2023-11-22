@@ -1,34 +1,31 @@
 version: "3.9"
 
 services:
-  db_fast_api:
-    hostname: postgres_fast_api
+  postgres:
     image: postgres:latest
-    container_name: postgres_fast_api
+    container_name: my-postgres-fast
+    environment:
+      POSTGRES_DB: result
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
     ports:
-      - '5432:5432'
-    volumes:
-      - ~/.pg/pg_data/user:/var/lib/postgresql/data
-    env_file:
-      - .env
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "postgres" ]
-      interval: 5s
-      retries: 5
-    restart: always
+      - "5432:5432"
+
 
   rabbitmq:
-    image: rabbitmq
+    image: rabbitmq:3-management
     container_name: rabbitmq_fast_api
     hostname: rabbitmq_fast_api
-    env_file:
-      - .env
+    ports:
+      - "15672:15672"
+      - "5672:5672"
     healthcheck:
       test: [ "CMD", "rabbitmqctl", "status" ]
       interval: 10s
       timeout: 30s
       retries: 10
     restart: always
+
 
 
   fast_api_services:
@@ -38,15 +35,11 @@ services:
     image: fast_api_app
     container_name: fast_api
     hostname: fast_api
-    depends_on:
-      - db_fast_api
-      - rabbitmq
-    env_file:
-      - .env
     ports:
       - "8000:8000"
+    depends_on:
+      - postgres
     command: >
       bash -c  "chmod +x run.sh && ./run.sh"
-
 
 
