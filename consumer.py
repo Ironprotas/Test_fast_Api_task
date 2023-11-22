@@ -1,39 +1,17 @@
 import asyncio
 import json
-import time
-
 from aio_pika import connect, IncomingMessage
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy import Column, Integer, String, DateTime, func, Text
-from sqlalchemy.ext.declarative import declarative_base
+from models import Result, engine, create_db, Base
+from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime as dt
 from pydantic import BaseModel
-import asyncpg
 
-
-DATABASE_URL = "postgresql+asyncpg://postgres:123@localhost/result"
 RABBITMQ_URL = "amqp://guest:guest@localhost:5672/"
-engine = create_async_engine(DATABASE_URL, echo=True)
-Base = declarative_base()
 
 class Message(BaseModel):
     datetime: str
     title: str
     text: str
-
-class Result(Base):
-    __tablename__ = "result"
-    id = Column(Integer, primary_key=True, index=True)
-    datetime = Column(DateTime, default=func.now())
-    title = Column(String)
-    text = Column(Text, nullable=False)
-    x_avg_count_in_line = Column(Integer)
-
-async def create_db():
-    conn = await asyncpg.connect(user='postgres', password="123")
-    result = await conn.fetch("SELECT 1 FROM pg_database WHERE datname = 'result'")
-    if not result:
-        await conn.execute('CREATE DATABASE result TEMPLATE template0')
 
 async def on_message(message: IncomingMessage):
     try:
@@ -44,9 +22,10 @@ async def on_message(message: IncomingMessage):
         text = message_model.text
         count_x = text.count("Х")
         datetime = dt.strptime(datetime_str, "%d.%m.%Y %H:%M:%S.%f")
+        average_x = (count_x / len(text))*100
 
         async with AsyncSession(engine) as db:
-             result = Result(datetime=datetime, title=title, text=text, x_avg_count_in_line=count_x)
+             result = Result(datetime=datetime, title=title, text=text, x_avg_count_in_line=average_x)
              db.add(result)
              await db.commit()
 
@@ -73,17 +52,17 @@ async def main():
     try:
         loop.run_forever()
     except KeyboardInterrupt:
-        pass
+        print("Programm stoped")
     finally:
         loop.close()
 
 if __name__ == "__main__":
+    print("test")
     loop = asyncio.get_event_loop()
     loop.create_task(main())
     try:
         loop.run_forever()
     except KeyboardInterrupt:
-        pass
+        print("Programm stoped")
     finally:
         loop.close()
-
