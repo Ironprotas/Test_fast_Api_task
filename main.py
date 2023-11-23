@@ -7,7 +7,7 @@ from aio_pika import connect, Channel, Message
 from datetime import datetime as dt
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import select
-from models import create_db, engine, Result, RABBITMQ_URL, DATABASE_URL
+from models import create_db, engine, Result, RABBITMQ_URL
 from sqlalchemy.ext.asyncio import AsyncSession
 
 

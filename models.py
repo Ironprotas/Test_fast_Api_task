@@ -7,6 +7,7 @@ RABBITMQ_URL = "amqp://guest:guest@rabbitmq_fast_api:5672/"
 
 DATABASE_URL = "postgresql+asyncpg://postgres:123@my-postgres-fast/result"
 
+
 engine = create_async_engine(DATABASE_URL, echo=True)
 Base = declarative_base()
 

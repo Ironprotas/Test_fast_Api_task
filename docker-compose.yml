@@ -24,9 +24,6 @@ services:
       interval: 10s
       timeout: 30s
       retries: 10
-    restart: always
-
-
 
   fast_api_services:
     build:

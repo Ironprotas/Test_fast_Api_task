@@ -7,7 +7,6 @@ from datetime import datetime as dt
 from pydantic import BaseModel
 
 
-
 class Message(BaseModel):
     datetime: str
     title: str
@@ -45,21 +44,21 @@ async def init():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-async def main():
-    await init()
-    loop = asyncio.get_event_loop()
-    loop.create_task(consume())
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        print("Programm stoped")
-    finally:
-        loop.close()
+# async def main():
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(init())
+# loop.create_task(consume())
+# try:
+#     loop.run_forever()
+# except KeyboardInterrupt:
+#     print("Programm stoped")
+# finally:
+#     loop.close()
 
 if __name__ == "__main__":
-
     loop = asyncio.get_event_loop()
-    loop.create_task(main())
+    loop.run_until_complete(init())
+    loop.create_task(consume())
     try:
         loop.run_forever()
     except KeyboardInterrupt:
